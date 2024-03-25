@@ -9,7 +9,7 @@ from anyocr_app import AnyOCRConsoleApp, AnyOCRConsoleAppMode, parse_arguments
 def test_run_recognition_mode(mock_ocr_client):
     load_dotenv()
     args = argparse.Namespace(
-        url="test_url",
+        url="https://urgent.id/sistem/foto/newminimallgmailcom-2021-12-29-19-31-30.png",
         prompt=None,
         create=False,
         output=None,
@@ -33,10 +33,10 @@ def test_run_recognition_mode(mock_ocr_client):
 def test_run_create_template_mode(mock_ocr_client):
     load_dotenv()
     args = argparse.Namespace(
-        url="test_url",
+        url="https://urgent.id/sistem/foto/newminimallgmailcom-2021-12-29-19-31-30.png",
         prompt=None,
         create=True,
-        output="test_output.txt",
+        output="prompts/prompt_json_tester.md",
         stream=False,
         vision=False,
         debug=False,
@@ -60,13 +60,13 @@ def test_parse_arguments():
         [
             "anyocr_app.py",
             "-u",
-            "test_url",
+            "https://urgent.id/sistem/foto/newminimallgmailcom-2021-12-29-19-31-30.png",
             "-p",
-            "test_prompt.txt",
+            "prompts/prompt_json_ktp.md",
             "-n",
             "True",
             "-o",
-            "test_output.txt",
+            "prompts/prompt_json_tester.md",
             "-s",
             "False",
             "-v",
@@ -76,10 +76,10 @@ def test_parse_arguments():
         ],
     ):
         args = parse_arguments()
-        assert args.url == "test_url"
-        assert args.prompt == "test_prompt.txt"
+        assert args.url == "https://urgent.id/sistem/foto/newminimallgmailcom-2021-12-29-19-31-30.png"
+        assert args.prompt == "prompts/prompt_json_ktp.md"
         assert args.create == True
-        assert args.output == "test_output.txt"
+        assert args.output == "prompts/prompt_json_tester.md"
         assert args.stream == False
         assert args.vision == True
         assert args.debug == True
