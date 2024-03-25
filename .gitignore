@@ -1,0 +1,9 @@
+# Ignore .env file
+.env
+
+# Ignore specific directories
+explore/
+res/
+bak/
+images/
+prompts_efi/
