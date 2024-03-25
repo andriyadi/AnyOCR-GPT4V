@@ -7,3 +7,4 @@ res/
 bak/
 images/
 prompts_efi/
+__pycache__/

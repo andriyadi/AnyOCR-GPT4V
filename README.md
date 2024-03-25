@@ -1,8 +1,13 @@
-# AnyOCR Console App
+# AnyOCR-GPT4V
+This repo contains the wrapper library and sample app to show the possibility of using GPT-4 with Vision model to recognize and understand text data from any images. You can imagine to use it to develop an OCR app for extracting textual data from any images.
 
-AnyOCR Console App is a Python application that allows you to recognize text from any image using Azure AI Vision and OpenAI's language model. It provides a convenient way to extract text from images and perform various OCR-related tasks.
+Mentioned wrapper library is `OCRClient.py`. And you can see how to use it in the sample app or `exp_ocr_client.py`
 
-## Features
+## AnyOCR Console App
+
+AnyOCR Console App is a provided Python application that shows the possibility to use the `OCRClient.py` wrapper library in order to recognize text from any image using OpenAI's GPT-4 with Vision model and Azure AI Vision. It provides a convenient way to extract text from images and perform various OCR-related tasks.
+
+Features:
 
 - Recognize text from images using Azure AI Vision
 - Generate prompt templates for OCR tasks  
