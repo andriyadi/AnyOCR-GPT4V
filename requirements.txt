@@ -5,4 +5,3 @@ Pygments==2.16.1
 python-dotenv==1.0.1
 Requests==2.31.0
 rich==13.7.1
-streamlit==1.32.2

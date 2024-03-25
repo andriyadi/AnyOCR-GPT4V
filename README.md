@@ -5,31 +5,30 @@ Mentioned wrapper library is `OCRClient.py`. And you can see how to use it in th
 
 ## AnyOCR Console App
 
-AnyOCR Console App is a provided Python application that shows the possibility to use the `OCRClient.py` wrapper library in order to recognize text from any image using OpenAI's GPT-4 with Vision model and Azure AI Vision. It provides a convenient way to extract text from images and perform various OCR-related tasks.
+AnyOCR Console App is a provided Python application that shows the possibility to use the `OCRClient.py` wrapper library in order to recognize text from any image using OpenAI's GPT-4 with Vision model (hosted on Azure OpenAI Service) and Azure AI Vision. It provides a convenient way to extract text from images and perform various OCR-related tasks.
 
 Features:
 
-- Recognize text from images using Azure AI Vision
-- Generate prompt templates for OCR tasks  
-- Customize prompt messages and constants
+- Recognize text from images using OpenAI's GPT-4 with Vision model and Azure AI Vision
+- Generate prompt templates to customize text recognition and understanding of specific image category  
 - Support for streaming responses
-- Estimate token usage and cost
+- Estimate token usage and cost, only possible for non-streaming response
 
 ## Prerequisites
 
 Before running the AnyOCR Console App, make sure you have the following:
 
-- Python 3.x installed
+- Latest Python 3.x installed
 - Required Python packages installed (see `requirements.txt`)  
+- Azure OpenAI Services credentials
 - Azure AI Vision API credentials
-- OpenAI API credentials
 
 ## Setup  
 
 1. Clone the repository:
 
    ```
-   git clone https://github.com/your-username/anyocr-console-app.git
+   git clone https://github.com/andriyadi/AnyOCR-GPT4V.git
    ```
 
 2. Install the required Python packages:
@@ -38,7 +37,7 @@ Before running the AnyOCR Console App, make sure you have the following:
    pip install -r requirements.txt
    ```
 
-3. Create a `.env` file in the project root directory and provide the following values:
+3. You MUST create a `.env` file in the project root directory and provide the following values:
 
    ```
    OPENAI_API_KEY="your-openai-api-key"
@@ -77,7 +76,7 @@ You can customize the behavior of the AnyOCR Console App by modifying the consta
 - `USE_AZURE_VISION`: Set to `True` to use Azure AI Vision for OCR (default: `True`)
 - `USE_STREAMING_RESPONSE`: Set to `True` to enable streaming responses (default: `False`)
 - `PROMPT_GENERATOR_FILEPATH`: Path to the prompt generator file (default: `"prompts/prompt_generator.md"`)
-- `USER_MESSAGE`: Default user message for OCR tasks
+- `USER_MESSAGE`: Default user message for prompting
 
 Feel free to explore and modify other constants to suit your needs.
 
