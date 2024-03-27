@@ -14,7 +14,7 @@ Features:
 - Support for streaming responses
 - Estimate token usage and cost, only possible for non-streaming response
 
-## Prerequisites
+### Prerequisites
 
 Before running the AnyOCR Console App, make sure you have the following:
 
@@ -23,7 +23,7 @@ Before running the AnyOCR Console App, make sure you have the following:
 - Azure OpenAI Services credentials
 - Azure AI Vision API credentials
 
-## Setup  
+### Setup  
 
 1. Clone the repository:
 
@@ -51,7 +51,7 @@ Before running the AnyOCR Console App, make sure you have the following:
 
 4. (Optional) Modify the constants in `_constants.py` to customize the behavior of the application.
 
-## Usage
+### Usage
 
 To run the AnyOCR Console App, use the following command:
 `python anyocr_app.py [options]`
@@ -69,7 +69,7 @@ Available options:
 Example usage:
 `python anyocr_app.py -u https://example.com/image.jpg -p prompts/custom_prompt.txt -s True -v True`
 
-## Customization
+### Customization
 
 You can customize the behavior of the AnyOCR Console App by modifying the constants in `_constants.py`. Some notable constants include:
 
@@ -79,6 +79,78 @@ You can customize the behavior of the AnyOCR Console App by modifying the consta
 - `USER_MESSAGE`: Default user message for prompting
 
 Feel free to explore and modify other constants to suit your needs.
+
+## AnyOCR API Service
+
+The AnyOCR API Service allows you to perform OCR (Optical Character Recognition) on images using a REST API. It utilizes Azure OpenAI and Azure Computer Vision services to extract text from images and generate structured output based on user-defined prompts.
+
+### Running the API Service
+
+1. Open a terminal and navigate to the project directory.
+
+2. Run the following command to start the AnyOCR API Service:
+
+   ```
+   uvicorn anyocr_api:app --reload
+   ```
+
+   This will start the API service using Uvicorn, and it will automatically reload the server whenever changes are made to the code.
+
+3. The API service will be accessible at <http://localhost:8000>.
+
+### API Endpoints
+
+The AnyOCR API Service provides the following endpoints:
+
+- POST /recognize: Performs OCR on an image and generates structured JSON output based on the provided body.
+- POST /create-template: Creates a new prompt template based on the provided body.
+
+Request
+
+- Method: POST
+- URL: /recognize or /create-template
+- Headers:
+
+  ```
+  Content-Type: application/json
+  ```
+  
+- Body:
+
+  ```
+  {
+     "img_url": "https://drive.usercontent.google.com/download?id=1wRVvTDjK79oJIakKlxeLs6IfG_xWULAK&export=download&authuser=0&confirm=t&uuid=57910263-5544-4ad4-8c25-09b2f7a43330&at=APZUnTVxm2e0pkXFIfNtvZ9oaJi7:1711563801165",
+     "prompt_file": "prompt_json_notapanen.md",
+     "use_ai_vision": false,
+     "img_detail_level": "low"
+  }
+  ```
+
+Response
+
+- Status Code: 200 OK
+- Body:
+  Either JSON payload as following example.
+
+  ```
+  {
+     'status': 'OK',
+     'data': {
+        'tanggal': '11-1-23'
+        // ...
+     },
+     'usage': {
+        'completion_tokens': 135,
+        'prompt_tokens': 419,
+        'total_tokens': 554,
+        'est_cost': 0.00824,
+        'usd_to_idr': 15797.6,
+        'est_cost_idr': 130.17222400000003
+     }
+  }
+  ```
+
+  or plain text explaining the image
 
 ## License
 
