@@ -5,6 +5,7 @@ First, check if the provided image is actually an Indonesian citizen card (Kartu
 }
 If the image is a valid Indonesian KTP, please extract all the text from the card and organize it into a JSON object with appropriate key-value pairs for each field. The JSON keys should retain the original field names in Bahasa Indonesia. Omit any fields that are not applicable or cannot be clearly determined from the information given in the image.
 The JSON object should follow this structure:
+```json
 {
 "provinsi": "",
 "kota": "",
@@ -25,6 +26,7 @@ The JSON object should follow this structure:
 "berlaku_hingga": "",
 "tgl_terbit": ""
 }
+```
 
 Notes:
 
