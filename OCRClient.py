@@ -1,4 +1,8 @@
-# OCRClient.py
+"""
+OCRClient.py
+Copyright (c) 2024 Andri Yadi (an.dri@me.com)
+DycodeX, eFishery
+"""
 
 import json
 import os

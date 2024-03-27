@@ -1,3 +1,9 @@
+"""
+AnyOCR Console App
+Copyright (c) 2024 Andri Yadi (an.dri@me.com)
+DycodeX, eFishery
+"""
+
 import os
 import argparse
 import time

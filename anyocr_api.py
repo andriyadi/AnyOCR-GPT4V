@@ -1,3 +1,9 @@
+"""
+AnyOCR API
+Copyright (c) 2024 Andri Yadi (an.dri@me.com)
+DycodeX, eFishery
+"""
+
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from pydantic import BaseModel
 from dotenv import load_dotenv
