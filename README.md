@@ -119,8 +119,8 @@ Request
 
   ```
   {
-     "img_url": "https://drive.usercontent.google.com/download?id=1wRVvTDjK79oJIakKlxeLs6IfG_xWULAK&export=download&authuser=0&confirm=t&uuid=57910263-5544-4ad4-8c25-09b2f7a43330&at=APZUnTVxm2e0pkXFIfNtvZ9oaJi7:1711563801165",
-     "prompt_file": "prompt_json_notapanen.md",
+     "img_url": "your-image-url",
+     "prompt_file": "your-prompt-file-path",
      "use_ai_vision": false,
      "img_detail_level": "low"
   }
@@ -130,7 +130,7 @@ Response
 
 - Status Code: 200 OK
 - Body:
-  Either JSON payload as following example.
+  Either JSON payload as following example when accessing endpoint /recognize:
 
   ```
   {
@@ -150,7 +150,22 @@ Response
   }
   ```
 
-  or plain text explaining the image
+  or plain text explaining the image and resulted prompt when accessing endpoint /create-template:
+  
+  ```
+   The provided image appears to be a photographed document, likely a ... bla bla bla"
+
+   Based on the text data in the image, here is a prompt for an LLM to convert the text into a JSON format:
+
+   "Create a JSON representation of the ... bla bla bla"
+
+   Here is an example of the JSON output for the given image:
+
+   {
+   //...
+   }
+
+   Please note that...bla bla bla.```
 
 ## License
 
