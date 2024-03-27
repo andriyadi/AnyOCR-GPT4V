@@ -82,7 +82,7 @@ Feel free to explore and modify other constants to suit your needs.
 
 ## AnyOCR API Service
 
-The AnyOCR API Service allows you to perform OCR (Optical Character Recognition) on images using a REST API. It utilizes Azure OpenAI and Azure Computer Vision services to extract text from images and generate structured output based on user-defined prompts.
+The AnyOCR API Service allows you to perform OCR on images using a REST API. It utilizes Azure OpenAI GPT-4 with Vision and Azure Computer Vision services to extract text from images and generate structured output based on user-defined prompts.
 
 ### Running the API Service
 
@@ -102,10 +102,10 @@ The AnyOCR API Service allows you to perform OCR (Optical Character Recognition)
 
 The AnyOCR API Service provides the following endpoints:
 
-- POST /recognize: Performs OCR on an image and generates structured JSON output based on the provided body.
-- POST /create-template: Creates a new prompt template based on the provided body.
+- POST `/recognize`: Performs OCR on an image and generates structured JSON output based on the provided body.
+- POST `/create-template`: Creates a new prompt template based on the provided body.
 
-Request
+**Request**
 
 - Method: POST
 - URL: /recognize or /create-template
@@ -126,11 +126,11 @@ Request
   }
   ```
 
-Response
+**Response**
 
 - Status Code: 200 OK
 - Body:
-  Either JSON payload as following example when accessing endpoint /recognize:
+  Either JSON payload as following example when accessing endpoint `/recognize`:
 
   ```
   {
@@ -150,22 +150,37 @@ Response
   }
   ```
 
-  or plain text explaining the image and resulted prompt when accessing endpoint /create-template:
+  or plain text explaining the image and resulted prompt when accessing endpoint `/create-template`:
   
   ```
-   The provided image appears to be a photographed document, likely a ... bla bla bla"
-
+   The provided image appears to be a photographed document, likely a ...bla bla bla...
    Based on the text data in the image, here is a prompt for an LLM to convert the text into a JSON format:
 
-   "Create a JSON representation of the ... bla bla bla"
+   "Create a JSON representation of the ...bla bla bla..."
 
    Here is an example of the JSON output for the given image:
-
    {
    //...
    }
 
    Please note that...bla bla bla.```
+
+**CURL**
+
+CURL command example:
+
+```
+curl -X 'POST' \
+  'http://localhost:8000/recognize' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "img_url": "your-image-url",
+  "prompt_file": "your-prompt-file-path",
+  "use_ai_vision": false,
+  "img_detail_level": "low"
+}'
+```
 
 ## License
 
