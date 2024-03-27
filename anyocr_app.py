@@ -57,12 +57,21 @@ class AnyOCRConsoleApp:
             self.args.prompt = PROMPT_GENERATOR_FILEPATH
 
         if self.args.prompt:
+            # Ensure the path of self.args.prompt is correct
+            if not (self.args.prompt.startswith("prompts") or self.args.prompt.startswith("prompts_efi")):
+                prompt_file = os.path.join(os.path.dirname(__file__), "prompts", self.args.prompt)
+
+                if not os.path.exists(prompt_file):
+                    self.args.prompt = os.path.join(os.path.dirname(__file__), "prompts_efi", self.args.prompt)
+                else:
+                    self.args.prompt = prompt_file
+
             if os.path.exists(self.args.prompt):
+                logging.getLogger("rich").info(f"Load prompt from file [bold green]{self.args.prompt}[/].", extra={"markup": True})
                 with open(self.args.prompt, 'r') as f:
                     self.user_message = f.read()
             else:
                 logging.getLogger("rich").error(f"Prompt generator file [bold red]{self.args.prompt}[/] does not exist.", extra={"markup": True})
-                return
 
     def run(self):
         # Load user_message from file if provided in prompt argument
