@@ -1,5 +1,5 @@
 from pydantic import HttpUrl
-from OCRClient import OCRClient, OCRClientResponseHandler
+from AnyOCREngine import AnyOCREngine, AnyOCREngineResponseHandler
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.spinner import Spinner
@@ -55,23 +55,23 @@ azure_vision_key = os.environ.get("AZURE_AI_VISION_API_KEY")
 
 streaming_response = args.stream if args.stream else USE_STREAMING_RESPONSE
 
-# Create an instance of OCRClientResponseHandler
-resp_handler = OCRClientResponseHandler(name="Default Handler")
+# Create an instance of AnyOCREngineResponseHandler
+resp_handler = AnyOCREngineResponseHandler(name="Default Handler")
 # Check if the instance is created successfully
-assert isinstance(resp_handler, OCRClientResponseHandler)
+assert isinstance(resp_handler, AnyOCREngineResponseHandler)
 
-def on_ocrclient_chunked_content_available(sender, **kwargs):
+def on_ocrengine_chunked_content_available(sender, **kwargs):
     # print(f"Caught signal from {sender!r}, data {kw!r}")
     content = kwargs.get("content", "")
     print(content, end="")
 # Connect handler to the response event
 resp_handler.on_chunked_content_available.connect(
-    on_ocrclient_chunked_content_available, resp_handler
+    on_ocrengine_chunked_content_available, resp_handler
 )
 
 # Or use attribute to connect handler to the response event
 @resp_handler.on_all_content_available.connect
-def on_ocrclient_all_content_available(sender, **kwargs):
+def on_ocrengine_all_content_available(sender, **kwargs):
     all_content = kwargs.get("content", "")
     if all_content != "":
         print("\n\n")
@@ -82,9 +82,9 @@ def on_ocrclient_all_content_available(sender, **kwargs):
     print("\n")
 
 
-# Create an instance of OCRClient
+# Create an instance of AnyOCREngine
 #print(deployment_name, api_version_default, azure_vision_key, azure_vision_endpoint, api_version_ai_vision, use_azure_vision)
-client = OCRClient(
+client = AnyOCREngine(
     # api_key=api_key,
     # azure_base_url=HttpUrl(api_base),
     # azure_base_url=api_base,
@@ -97,7 +97,7 @@ client = OCRClient(
     response_handler=resp_handler,
 )
 # Check if the instance is created successfully
-assert isinstance(client, OCRClient)
+assert isinstance(client, AnyOCREngine)
 
 
 def display_token_usage(token_info):

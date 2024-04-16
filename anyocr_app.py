@@ -28,7 +28,7 @@ from dotenv import load_dotenv
 from enum import Enum
 
 from _constants import *
-from OCRClient import OCRClient, OCRClientResponseHandler, OCRClientImageDetailLevel
+from AnyOCREngine import AnyOCREngine, AnyOCREngineResponseHandler, AnyOCREngineImageDetailLevel
 
 class AnyOCRConsoleAppMode(Enum):
     Recognition = 0
@@ -52,7 +52,7 @@ class AnyOCRConsoleApp:
 
         self.last_response_content: str = ""
 
-        self.resp_handler = OCRClientResponseHandler(name="Default Handler")
+        self.resp_handler = AnyOCREngineResponseHandler(name="Default Handler")
 
         self.appMode: AnyOCRConsoleAppMode = AnyOCRConsoleAppMode.CreateTemplate if args.create else AnyOCRConsoleAppMode.Recognition
 
@@ -95,20 +95,20 @@ class AnyOCRConsoleApp:
             return
 
         # Check if the instance is created successfully
-        assert isinstance(self.resp_handler, OCRClientResponseHandler)
+        assert isinstance(self.resp_handler, AnyOCREngineResponseHandler)
 
         # Connect handler to the response event
         self.resp_handler.on_chunked_content_available.connect(
-            self.on_ocrclient_chunked_content_available, self.resp_handler
+            self.on_ocrengine_chunked_content_available, self.resp_handler
         )
         self.resp_handler.on_all_content_available.connect(
-            self.on_ocrclient_all_content_available, self.resp_handler
+            self.on_ocrengine_all_content_available, self.resp_handler
         )
 
 
-        # Create an instance of OCRClient
+        # Create an instance of AnyOCREngine
         try:
-            client = OCRClient(
+            client = AnyOCREngine(
                 # api_key=self.api_key,
                 # azure_base_url=self.api_base,
                 azure_deployment_name=self.deployment_name,
@@ -147,7 +147,7 @@ class AnyOCRConsoleApp:
         self.console.print(Markdown(f"Elapsed time: **{elapsed_time:.2f} seconds**"))
         print("\n")
 
-    def on_ocrclient_all_content_available(self, sender, **kwargs):
+    def on_ocrengine_all_content_available(self, sender, **kwargs):
         self.last_response_content = kwargs.get("content", "")
         if self.last_response_content != "":
             print("\n\n")
@@ -157,12 +157,12 @@ class AnyOCRConsoleApp:
 
         print("\n")
 
-    def on_ocrclient_chunked_content_available(self, sender, **kwargs):
+    def on_ocrengine_chunked_content_available(self, sender, **kwargs):
         # print(f"Caught signal from {sender!r}, data {kw!r}")
         chunked_content = kwargs.get("content", "")
         print(chunked_content, end="")
 
-    def do_recognition(self, client: OCRClient):
+    def do_recognition(self, client: AnyOCREngine):
         # Send request to the OCR service
         try:
             response = client.recognize(
@@ -170,7 +170,7 @@ class AnyOCRConsoleApp:
                 user_message=self.user_message,
                 temperature=0.2,
                 streaming_response=self.streaming_response,
-                img_detail_level=OCRClientImageDetailLevel.DetailLow,
+                img_detail_level=AnyOCREngineImageDetailLevel.DetailLow,
             )
         except Exception as e:
             logging.getLogger("rich").error(f"[bold red]OCR Client Error:[/] {e}", extra={"markup": True})

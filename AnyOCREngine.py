@@ -1,5 +1,5 @@
 """
-OCRClient.py
+AnyOCREngine.py
 Copyright (c) 2024 Andri Yadi (an.dri@me.com)
 DycodeX, eFishery
 """
@@ -21,7 +21,7 @@ OCR_CLIENT_SYSTEM_MESSAGE = "\
 
 
 # @dataclass
-class OCRClientResponseHandler:
+class AnyOCREngineResponseHandler:
     # Define handler's name
     name: str
 
@@ -55,17 +55,17 @@ class OCRClientResponseHandler:
         print(content, end="")
 
     def __repr__(self):
-        return f"<OCRClientResponseHandler {self.name}>"
+        return f"<AnyOCREngineResponseHandler {self.name}>"
 
 
-class OCRClientImageDetailLevel(Enum):
+class AnyOCREngineImageDetailLevel(Enum):
     DetailAuto = "auto"
     DetailLow = "low"
     DetailHigh = "high"
 
 
-# class OCRClient(BaseModel):
-class OCRClient:
+# class AnyOCREngine(BaseModel):
+class AnyOCREngine:
 
     api_key: str
     # azure_base_url: HttpUrl
@@ -78,7 +78,7 @@ class OCRClient:
     azure_vision_api_version: str | None = None
     system_message: str = OCR_CLIENT_SYSTEM_MESSAGE
 
-    response_handler: OCRClientResponseHandler = None
+    response_handler: AnyOCREngineResponseHandler = None
 
     openai_base_url: str
 
@@ -141,7 +141,7 @@ class OCRClient:
         img_src: str,
         user_message: str | None = None,
         streaming_response: bool = True,
-        img_detail_level: OCRClientImageDetailLevel = OCRClientImageDetailLevel.DetailAuto,
+        img_detail_level: AnyOCREngineImageDetailLevel = AnyOCREngineImageDetailLevel.DetailAuto,
         max_tokens: int = 4096,
         temperature: float = 0.2,
     ):

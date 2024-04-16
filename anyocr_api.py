@@ -15,7 +15,7 @@ from rich.console import Console
 from rich.logging import RichHandler
 from enum import Enum
 
-from OCRClient import OCRClient, OCRClientResponseHandler, OCRClientImageDetailLevel
+from AnyOCREngine import AnyOCREngine, AnyOCREngineResponseHandler, AnyOCREngineImageDetailLevel
 from _constants import *
 load_dotenv()
 
@@ -33,10 +33,10 @@ class OCRRequest(BaseModel):
     prompt_file: str = None
     temperature: float = 0.1 #0.2
     use_ai_vision: bool = True
-    img_detail_level: OCRClientImageDetailLevel = OCRClientImageDetailLevel.DetailAuto
+    img_detail_level: AnyOCREngineImageDetailLevel = AnyOCREngineImageDetailLevel.DetailAuto
 
-# Create an instance of OCRClient
-client = OCRClient(
+# Create an instance of AnyOCREngine
+client = AnyOCREngine(
     azure_deployment_name=os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME"),
     api_version=API_VERSION_DEFAULT,
     azure_vision_key=os.environ.get("AZURE_AI_VISION_API_KEY"),
@@ -166,7 +166,7 @@ async def do_recognize(req_mode: AnyOCRApiRequestMode, request: OCRRequest):
     if not request.prompt and request.prompt_file:
         request.prompt = await load_prompt(req_mode, request.prompt_file)
 
-    # Override the default OCRClient settings
+    # Override the default AnyOCREngine settings
     client.azure_vision_active = request.use_ai_vision
 
     # Send request to the OCR service
