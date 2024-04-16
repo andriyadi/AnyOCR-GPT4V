@@ -281,7 +281,7 @@ class AnyOCREngine:
     ########################## 
     # Helper static methods
     ########################## 
-    def load_prompt_from_file(mode: AnyOCREngineOpMode, prompt_file: str, prompt_file_generator: str):
+    def load_prompt_from_file(mode: AnyOCREngineOpMode, prompt_file: str, prompt_file_generator: str) -> str:
         if mode == AnyOCREngineOpMode.CreateTemplate:
             # print(f"Creating template. Use prompt file: {prompt_file_generator}")
             logging.getLogger("rich").debug(f"Creating template. Use prompt file: [bold green]{prompt_file_generator}[/]", extra={"markup": True})
@@ -328,7 +328,7 @@ class AnyOCREngine:
         try:
             result = urllib.parse.urlparse(img_url)
             if all([result.scheme, result.netloc]):
-                logging.getLogger("rich").debug(f"Valid image URL: {img_url}", extra={"markup": True})
+                logging.getLogger("rich").info(f"Valid image URL: {img_url}", extra={"markup": True})
                 # It's a URL. All's good, return
                 return img_url
         except ValueError:

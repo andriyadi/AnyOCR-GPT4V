@@ -50,12 +50,12 @@ class AnyOCRConsoleApp:
 
         self.resp_handler = AnyOCREngineResponseHandler(name="Default Handler")
 
-        self.appMode: AnyOCREngineOpMode = AnyOCREngineOpMode.CreateTemplate if args.create else AnyOCREngineOpMode.Recognition
+        self.app_mode: AnyOCREngineOpMode = AnyOCREngineOpMode.CreateTemplate if args.create else AnyOCREngineOpMode.Recognition
 
     def run(self):
         # Load user_message from file if provided in prompt argument
         # self.load_prompt()
-        self.user_message = AnyOCREngine.load_prompt_from_file(self.appMode, self.args.prompt, PROMPT_GENERATOR_FILEPATH)
+        self.user_message = AnyOCREngine.load_prompt_from_file(self.app_mode, self.args.prompt, PROMPT_GENERATOR_FILEPATH)
 
         # print()
         # print("Prompt: \n", self.user_message)
@@ -155,8 +155,8 @@ class AnyOCRConsoleApp:
             token_info = response.usage
             self.display_token_usage(token_info)
 
-        # If appMode == CreateTemplate, then save the template if the output file is provided
-        if self.appMode == AnyOCREngineOpMode.CreateTemplate:
+        # If app_mode == CreateTemplate, then save the template if the output file is provided
+        if self.app_mode == AnyOCREngineOpMode.CreateTemplate:
             #self.save_prompt_template()
             AnyOCREngine.save_prompt_template_to_file(self.args.output, self.last_response_content)
 
