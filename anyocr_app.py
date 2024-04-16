@@ -28,11 +28,7 @@ from dotenv import load_dotenv
 from enum import Enum
 
 from _constants import *
-from AnyOCREngine import AnyOCREngine, AnyOCREngineResponseHandler, AnyOCREngineImageDetailLevel
-
-class AnyOCRConsoleAppMode(Enum):
-    Recognition = 0
-    CreateTemplate = 1
+from AnyOCREngine import AnyOCREngine, AnyOCREngineResponseHandler, AnyOCREngineImageDetailLevel, AnyOCREngineOpMode
 
 class AnyOCRConsoleApp:
     def __init__(self, args):
@@ -54,34 +50,12 @@ class AnyOCRConsoleApp:
 
         self.resp_handler = AnyOCREngineResponseHandler(name="Default Handler")
 
-        self.appMode: AnyOCRConsoleAppMode = AnyOCRConsoleAppMode.CreateTemplate if args.create else AnyOCRConsoleAppMode.Recognition
-
-    def load_prompt(self):
-        if self.appMode == AnyOCRConsoleAppMode.CreateTemplate:
-            # print(f"Creating template. Use prompt file: {PROMPT_GENERATOR_FILEPATH}")
-            logging.getLogger("rich").debug(f"Creating template. Use prompt file: [bold green]{PROMPT_GENERATOR_FILEPATH}[/]", extra={"markup": True})
-            self.args.prompt = PROMPT_GENERATOR_FILEPATH
-
-        if self.args.prompt:
-            # Ensure the path of self.args.prompt is correct
-            if not (self.args.prompt.startswith("prompts") or self.args.prompt.startswith("prompts_efi")):
-                prompt_file = os.path.join(os.path.dirname(__file__), "prompts", self.args.prompt)
-
-                if not os.path.exists(prompt_file):
-                    self.args.prompt = os.path.join(os.path.dirname(__file__), "prompts_efi", self.args.prompt)
-                else:
-                    self.args.prompt = prompt_file
-
-            if os.path.exists(self.args.prompt):
-                logging.getLogger("rich").info(f"Load prompt from file [bold green]{self.args.prompt}[/].", extra={"markup": True})
-                with open(self.args.prompt, 'r') as f:
-                    self.user_message = f.read()
-            else:
-                logging.getLogger("rich").error(f"Prompt generator file [bold red]{self.args.prompt}[/] does not exist.", extra={"markup": True})
+        self.appMode: AnyOCREngineOpMode = AnyOCREngineOpMode.CreateTemplate if args.create else AnyOCREngineOpMode.Recognition
 
     def run(self):
         # Load user_message from file if provided in prompt argument
-        self.load_prompt()
+        # self.load_prompt()
+        self.user_message = AnyOCREngine.load_prompt_from_file(self.appMode, self.args.prompt, PROMPT_GENERATOR_FILEPATH)
 
         # print()
         # print("Prompt: \n", self.user_message)
@@ -89,7 +63,8 @@ class AnyOCRConsoleApp:
         # print()
 
         try:
-            self.ensure_image()
+            # self.load_image()
+            self.img_src = AnyOCREngine.load_image(self.img_src)
         except Exception as e:
             logging.getLogger("rich").error(f"[bold red]Image URL Error:[/] {e}", extra={"markup": True})
             return
@@ -104,7 +79,6 @@ class AnyOCRConsoleApp:
         self.resp_handler.on_all_content_available.connect(
             self.on_ocrengine_all_content_available, self.resp_handler
         )
-
 
         # Create an instance of AnyOCREngine
         try:
@@ -182,104 +156,25 @@ class AnyOCRConsoleApp:
             self.display_token_usage(token_info)
 
         # If appMode == CreateTemplate, then save the template if the output file is provided
-        if self.appMode == AnyOCRConsoleAppMode.CreateTemplate:
-            self.save_prompt_template()
-
-    def ensure_image(self):
-        try:
-            result = urllib.parse.urlparse(self.img_src)
-            if all([result.scheme, result.netloc]):
-                logging.getLogger("rich").debug(f"Valid image URL: {self.img_src}", extra={"markup": True})
-                # It's a URL. All's good, return
-                return
-        except ValueError:
-            logging.getLogger("rich").error(f"Invalid image URL: {self.img_src}", extra={"markup": True})
-
-        # If not return, assumed it's a file path
-        if os.path.exists(self.img_src):
-            # Load file
-            with open(self.img_src, 'rb') as f:
-                # Check if the file is actually an image file
-                try:
-                    # Get image file type
-                    mime_type, _ = mimetypes.guess_type(self.img_src)
-                    logging.getLogger("rich").debug(f"MIME type: [bold green]{mime_type}[/bold green]", extra={"markup": True})
-                    if mime_type and mime_type.startswith('image/'):
-                        encoded_image = base64.b64encode(f.read()).decode("ascii")
-                        self.img_src = f"data:{mime_type};base64,{encoded_image}"
-                        # print(self.img_src)
-                except IOError:
-                    raise ValueError(f"File {self.img_src} is not a valid image file.")
-        else:
-            raise FileNotFoundError(f"Image file {self.img_src} does not exist.")
-
-    def save_prompt_template(self):
-        if self.args.output and self.last_response_content != "":
-            with open(self.args.output, 'w') as f:
-                f.write(self.last_response_content)
-                logging.getLogger("rich").info(f"Prompt Template is saved to [bold green]{self.args.output}[/bold green]", extra={"markup": True})
-        #else:
-            # Omit, just display the template
-
-    def get_currency_conversion_rate(self):
-        import requests
-        conversion_url = "https://api.exchangerate-api.com/v4/latest/USD"
-
-        try:
-            # Using a context manager to ensure the session is closed
-            with requests.Session() as session:
-                response = session.get(conversion_url)
-                response.raise_for_status()  # This will raise an HTTPError if the HTTP request returned an unsuccessful status code
-                currency_data = response.json()
-        except requests.HTTPError as e:
-            print(f"HTTPError occurred: {e}")
-            return None
-        except requests.RequestException as e:
-            print(f"RequestException occurred: {e}")
-            return None
-
-        # Make API call to get USD to IDR conversion rate
-        # response = requests.get(conversion_url)
-        # currency_data = response.json()
-
-        # Get the conversion rate
-        conversion_rate = currency_data["rates"]["IDR"]
-        return conversion_rate
+        if self.appMode == AnyOCREngineOpMode.CreateTemplate:
+            #self.save_prompt_template()
+            AnyOCREngine.save_prompt_template_to_file(self.args.output, self.last_response_content)
 
     def display_token_usage(self, token_info):
+
+        ret_tok_info = AnyOCREngine.process_token_usage(token_info, True)
+
         md_token_info = f"**Token Usage & Cost:**\n\n\
-* Prompt tokens: **{token_info.prompt_tokens}**\n\
-* Completion tokens: **{token_info.completion_tokens}**\n\
-* Total tokens: **{token_info.total_tokens}**\n\
+* Prompt tokens: **{ret_tok_info['prompt_tokens']}**\n\
+* Completion tokens: **{ret_tok_info['completion_tokens']}**\n\
+* Total tokens: **{ret_tok_info['total_tokens']}**\n\
 "
 
-        # Estimate cost based on open ai token usage
-        # https://openai.com/pricing
-        input_cost_per_token = 10.00 / 1000000  # $10.00 / 1M tokens
-        input_token_used = token_info.prompt_tokens
-        output_cost_per_token = 30.00 / 1000000  # $30.00 / 1M tokens
-        output_token_used = token_info.completion_tokens
-        estimated_cost = (input_cost_per_token * input_token_used) + (output_cost_per_token * output_token_used)
+        #print("1 USD = Rp", ret_tok_info['usd_to_idr'])
+        md_token_info += f"* 1 USD = **Rp {ret_tok_info['usd_to_idr']:.2f}**\n"
 
-        # Convert cost to rupiah
-        # convert_idr = False
-        convert_idr = True
-        conversion_rate = None
-
-        if convert_idr:
-            conversion_rate = self.get_currency_conversion_rate()
-        # If still None, use default conversion rate
-        if conversion_rate is None:
-            conversion_rate = 15600
-
-        #print("1 USD = Rp", conversion_rate)
-        md_token_info += f"* 1 USD = **Rp {conversion_rate:.2f}**\n"
-
-        # Calculate estimated cost in Rupiah
-        estimated_cost_rupiah = estimated_cost * conversion_rate
-
-        #print(f"Estimated cost: $ {estimated_cost} = Rp {estimated_cost_rupiah}")
-        md_token_info += f"* Estimated cost: **$ {estimated_cost:.4f}** = **Rp {estimated_cost_rupiah:.2f}**\n"
+        #print(f"Estimated cost: $ {ret_tok_info['est_cost']} = Rp {ret_tok_info['est_cost_idr']}")
+        md_token_info += f"* Estimated cost: **$ {ret_tok_info['est_cost']:.4f}** = **Rp {ret_tok_info['est_cost_idr']:.2f}**\n"
 
         self.console.print(Markdown(md_token_info))
         print("\n")

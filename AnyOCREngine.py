@@ -6,6 +6,10 @@ DycodeX, eFishery
 
 import json
 import os
+import logging
+import urllib.parse
+import mimetypes
+import base64
 
 # from pydantic import BaseModel, HttpUrl
 # from pydantic.dataclasses import dataclass
@@ -63,6 +67,9 @@ class AnyOCREngineImageDetailLevel(Enum):
     DetailLow = "low"
     DetailHigh = "high"
 
+class AnyOCREngineOpMode(Enum):
+    Recognition = 0
+    CreateTemplate = 1
 
 # class AnyOCREngine(BaseModel):
 class AnyOCREngine:
@@ -134,6 +141,7 @@ class AnyOCREngine:
         self.azure_vision_api_version = azure_vision_api_version
         self.system_message = system_message
         self.response_handler = response_handler
+
 
     def recognize(
         self,
@@ -269,3 +277,147 @@ class AnyOCREngine:
                     self.response_handler.handle_all_content_available(all_content)
 
         return response
+
+    ########################## 
+    # Helper static methods
+    ########################## 
+    def load_prompt_from_file(mode: AnyOCREngineOpMode, prompt_file: str, prompt_file_generator: str):
+        if mode == AnyOCREngineOpMode.CreateTemplate:
+            # print(f"Creating template. Use prompt file: {prompt_file_generator}")
+            logging.getLogger("rich").debug(f"Creating template. Use prompt file: [bold green]{prompt_file_generator}[/]", extra={"markup": True})
+            prompt_file = prompt_file_generator
+
+        ret_prompt = ""
+        if prompt_file:
+            # Ensure the path of prompt_file is correct
+            if prompt_file.startswith("prompts") or prompt_file.startswith("prompts_efi"):
+                prompt_file = os.path.join(os.path.dirname(__file__), prompt_file)
+            else:
+                prompt_file2 = os.path.join(os.path.dirname(__file__), "prompts", prompt_file)
+
+                if not os.path.exists(prompt_file2):
+                    prompt_file = os.path.join(os.path.dirname(__file__), "prompts_efi", prompt_file)
+                else:
+                    prompt_file = prompt_file2
+            
+            # Read prompt file
+            if os.path.exists(prompt_file):
+                logging.getLogger("rich").info(f"Load prompt from file [bold green]{prompt_file}[/].", extra={"markup": True})
+                with open(prompt_file, 'r') as f:
+                    ret_prompt = f.read()
+            else:
+                logging.getLogger("rich").error(f"Prompt generator file [bold red]{prompt_file}[/] does not exist.", extra={"markup": True})
+                
+        return ret_prompt
+    
+    def save_prompt_template_to_file(prompt_out_file: str, all_content: str):
+        if prompt_out_file and all_content:
+            # Ensure file path
+            if prompt_out_file.startswith("prompts") or prompt_out_file.startswith("prompts_efi"):
+                prompt_out_file = os.path.join(os.path.dirname(__file__), prompt_out_file)
+            else:
+                prompt_out_file = os.path.join(os.path.dirname(__file__), "prompts", prompt_out_file)
+
+            with open(prompt_out_file, 'w') as f:
+                f.write(all_content)
+                logging.getLogger("rich").info(f"Prompt Template is saved to [bold green]{prompt_out_file}[/bold green]", extra={"markup": True})
+        #else:
+            # Omit, just display the template
+
+    def load_image(img_url: str) -> str:
+        try:
+            result = urllib.parse.urlparse(img_url)
+            if all([result.scheme, result.netloc]):
+                logging.getLogger("rich").debug(f"Valid image URL: {img_url}", extra={"markup": True})
+                # It's a URL. All's good, return
+                return img_url
+        except ValueError:
+            logging.getLogger("rich").error(f"Invalid image URL: {img_url}", extra={"markup": True})
+            raise ValueError(f"Invalid image URL: {img_url}")
+
+        # If not return, assumed it's a file path
+        if os.path.exists(img_url):
+            # Load file
+            with open(img_url, 'rb') as f:
+                # Check if the file is actually an image file
+                try:
+                    # Get image file type
+                    mime_type, _ = mimetypes.guess_type(img_url)
+                    logging.getLogger("rich").debug(f"MIME type: [bold green]{mime_type}[/bold green]", extra={"markup": True})
+                    if mime_type and mime_type.startswith('image/'):
+                        encoded_image = base64.b64encode(f.read()).decode("ascii")
+                        img_base64 = f"data:{mime_type};base64,{encoded_image}"
+                        # print(img_base64)
+                        return img_base64                        
+                except IOError:
+                    raise ValueError(f"File {img_url} is not a valid image file.")
+        else:
+            raise FileNotFoundError(f"Image file {img_url} does not exist.")
+
+    def process_token_usage(token_info, convert_idr: bool = False):
+        if token_info is None:
+            return None
+
+        # Convert token_info to dict
+        out_token_info = {
+            "completion_tokens": token_info.completion_tokens, 
+            "prompt_tokens": token_info.prompt_tokens,
+            "total_tokens": token_info.total_tokens,
+        }
+
+        # Estimate cost based on open ai token usage
+        # https://openai.com/pricing
+        input_cost_per_token = 10.00 / 1000000  # $10.00 / 1M tokens
+        input_token_used = token_info.prompt_tokens
+        output_cost_per_token = 30.00 / 1000000  # $30.00 / 1M tokens
+        output_token_used = token_info.completion_tokens
+        estimated_cost = (input_cost_per_token * input_token_used) + (output_cost_per_token * output_token_used)
+
+        # Convert cost to rupiah
+        conversion_rate = None
+
+        if convert_idr:
+            conversion_rate = AnyOCREngine.get_currency_conversion_rate()
+        # If still None, use default conversion rate
+        if conversion_rate is None:
+            conversion_rate = 16000
+
+        #print("1 USD = Rp", conversion_rate)
+        out_token_info["est_cost"] = estimated_cost
+        out_token_info["usd_to_idr"] = conversion_rate
+
+        # Calculate estimated cost in Rupiah
+        estimated_cost_rupiah = estimated_cost * conversion_rate
+        out_token_info["est_cost_idr"] = estimated_cost_rupiah
+
+        #print(f"Estimated cost: $ {estimated_cost} = Rp {estimated_cost_rupiah}")
+        #print(out_token_info)
+
+        return out_token_info
+
+    def get_currency_conversion_rate() -> float:
+        import requests
+        conversion_url = "https://api.exchangerate-api.com/v4/latest/USD"
+
+        try:
+            # Using a context manager to ensure the session is closed
+            with requests.Session() as session:
+                response = session.get(conversion_url)
+                response.raise_for_status()  # This will raise an HTTPError if the HTTP request returned an unsuccessful status code
+                currency_data = response.json()
+        except requests.HTTPError as e:
+            print(f"HTTPError occurred: {e}")
+            return None
+        except requests.RequestException as e:
+            print(f"RequestException occurred: {e}")
+            return None
+
+        # Make API call to get USD to IDR conversion rate
+        # response = requests.get(conversion_url)
+        # currency_data = response.json()
+
+        # Get the conversion rate
+        conversion_rate = currency_data["rates"]["IDR"]
+        return conversion_rate
+
+    
