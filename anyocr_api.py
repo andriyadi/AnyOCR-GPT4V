@@ -34,9 +34,9 @@ class OCRRequest(BaseModel):
 # Create an instance of AnyOCREngine
 engine = AnyOCREngine(
     azure_deployment_name=os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME"),
-    api_version=API_VERSION_DEFAULT,
+    api_version=OCR_API_VERSION_DEFAULT,
     azure_vision_key=os.environ.get("AZURE_AI_VISION_API_KEY"),
-    azure_vision_api_version=API_VERSION_AI_VISION,
+    azure_vision_api_version=OCR_API_VERSION_AI_VISION,
     azure_vision_endpoint=os.environ.get("AZURE_AI_VISION_ENDPOINT"),
     azure_vision_active=True
 )
@@ -47,7 +47,7 @@ async def do_recognize(req_mode: AnyOCREngineOpMode, request: OCRRequest):
         raise HTTPException(status_code=400, detail="Either img_url or img_file must be provided.")
 
     if not request.prompt and request.prompt_file:
-        request.prompt = AnyOCREngine.load_prompt_from_file(req_mode, request.prompt_file, PROMPT_GENERATOR_FILEPATH)
+        request.prompt = AnyOCREngine.load_prompt_from_file(req_mode, request.prompt_file, OCR_PROMPT_GENERATOR_FILEPATH)
 
     # Override the default AnyOCREngine settings
     engine.azure_vision_active = request.use_ai_vision

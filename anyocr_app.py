@@ -41,10 +41,10 @@ class AnyOCRConsoleApp:
         self.azure_vision_endpoint = os.environ.get("AZURE_AI_VISION_ENDPOINT")
         self.azure_vision_key = os.environ.get("AZURE_AI_VISION_API_KEY")
 
-        self.img_src = args.url if args.url else IMG_SRC
-        self.use_azure_vision = args.vision if args.vision else USE_AZURE_VISION
-        self.streaming_response = args.stream if args.stream else USE_STREAMING_RESPONSE
-        self.user_message = USER_MESSAGE
+        self.img_src = args.url if args.url else OCR_DEFAULT_IMG_SRC
+        self.use_azure_vision = args.vision if args.vision else OCR_USE_AZURE_VISION
+        self.streaming_response = args.stream if args.stream else OCR_USE_STREAMING_RESPONSE
+        self.user_message = OCR_USER_MESSAGE
 
         self.last_response_content: str = ""
 
@@ -55,7 +55,7 @@ class AnyOCRConsoleApp:
     def run(self):
         # Load user_message from file if provided in prompt argument
         # self.load_prompt()
-        self.user_message = AnyOCREngine.load_prompt_from_file(self.app_mode, self.args.prompt, PROMPT_GENERATOR_FILEPATH)
+        self.user_message = AnyOCREngine.load_prompt_from_file(self.app_mode, self.args.prompt, OCR_PROMPT_GENERATOR_FILEPATH)
 
         # print()
         # print("Prompt: \n", self.user_message)
@@ -86,9 +86,9 @@ class AnyOCRConsoleApp:
                 # api_key=self.api_key,
                 # azure_base_url=self.api_base,
                 azure_deployment_name=self.deployment_name,
-                api_version=API_VERSION_DEFAULT,
+                api_version=OCR_API_VERSION_DEFAULT,
                 azure_vision_key=self.azure_vision_key,
-                azure_vision_api_version=API_VERSION_AI_VISION,
+                azure_vision_api_version=OCR_API_VERSION_AI_VISION,
                 azure_vision_endpoint=self.azure_vision_endpoint,
                 azure_vision_active=self.use_azure_vision,
                 response_handler=self.resp_handler,
@@ -191,12 +191,12 @@ def str_to_bool(value):
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="AnyOCR Console App - Recognize text from any images", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-u', '--url', help='URL or file path of the image', default=IMG_SRC)
+    parser.add_argument('-u', '--url', help='URL or file path of the image', default=OCR_DEFAULT_IMG_SRC)
     parser.add_argument('-p', '--prompt', help='Path to the prompt file to read')
     parser.add_argument('-n', '--create', help='Create a new prompt template', type=str_to_bool, nargs='?', const=True, default=False)
     parser.add_argument('-o', '--output', help='Output file path of created prompt template')
-    parser.add_argument('-s', '--stream', help='Streaming the response or not', type=str_to_bool, nargs='?', const=True, default=USE_STREAMING_RESPONSE)
-    parser.add_argument('-v', '--vision', help='Use Azure AI vision or not', type=str_to_bool, nargs='?', const=True, default=USE_AZURE_VISION)
+    parser.add_argument('-s', '--stream', help='Streaming the response or not', type=str_to_bool, nargs='?', const=True, default=OCR_USE_STREAMING_RESPONSE)
+    parser.add_argument('-v', '--vision', help='Use Azure AI vision or not', type=str_to_bool, nargs='?', const=True, default=OCR_USE_AZURE_VISION)
     parser.add_argument('-d', '--debug', help='Show debugging messages', type=str_to_bool, nargs='?', const=True, default=False)
     _args = parser.parse_args()
     # print(vars(_args))

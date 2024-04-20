@@ -58,12 +58,12 @@ To run the AnyOCR Console App, use the following command:
 
 Available options:
 
-- `-u`, `--url`: URL or file path of the image (default: IMG_SRC from `_constants.py`)
+- `-u`, `--url`: URL or file path of the image (default: OCR_DEFAULT_IMG_SRC from `_constants.py`)
 - `-p`, `--prompt`: Path to the prompt file to read  
 - `-n`, `--create`: Create a new prompt template (default: False)
 - `-o`, `--output`: Output file path of created prompt template
-- `-s`, `--stream`: Streaming the response or not (default: USE_STREAMING_RESPONSE from `_constants.py`)
-- `-v`, `--vision`: Use Azure AI Vision or not (default: USE_AZURE_VISION from `_constants.py`)
+- `-s`, `--stream`: Streaming the response or not (default: OCR_USE_STREAMING_RESPONSE from `_constants.py`)
+- `-v`, `--vision`: Use Azure AI Vision or not (default: OCR_USE_AZURE_VISION from `_constants.py`)
 - `-d`, `--debug`: Show debugging messages (default: False)
 
 Example usage:
@@ -73,10 +73,10 @@ Example usage:
 
 You can customize the behavior of the AnyOCR Console App by modifying the constants in `_constants.py`. Some notable constants include:
 
-- `USE_AZURE_VISION`: Set to `True` to use Azure AI Vision for OCR (default: `True`)
-- `USE_STREAMING_RESPONSE`: Set to `True` to enable streaming responses (default: `False`)
-- `PROMPT_GENERATOR_FILEPATH`: Path to the prompt generator file (default: `"prompts/prompt_generator.md"`)
-- `USER_MESSAGE`: Default user message for prompting
+- `OCR_USE_AZURE_VISION`: Set to `True` to use Azure AI Vision for OCR (default: `True`)
+- `OCR_USE_STREAMING_RESPONSE`: Set to `True` to enable streaming responses (default: `False`)
+- `OCR_PROMPT_GENERATOR_FILEPATH`: Path to the prompt generator file (default: `"prompts/prompt_generator.md"`)
+- `OCR_USER_MESSAGE`: Default user message for prompting
 
 Feel free to explore and modify other constants to suit your needs.
 

@@ -24,15 +24,15 @@ def str_to_bool(value):
 parser = argparse.ArgumentParser(description='Recognize text from image', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-u', '--url', help='URL of the image')
 parser.add_argument('-p', '--prompt', help='Path to the prompt file')
-parser.add_argument('-s', '--stream', help='Streaming the response or not', type=str_to_bool, nargs='?', const=True, default=USE_STREAMING_RESPONSE)
-parser.add_argument('-v', '--vision', help='Use Azure AI vision or not', type=str_to_bool, nargs='?', const=True, default=USE_AZURE_VISION)
+parser.add_argument('-s', '--stream', help='Streaming the response or not', type=str_to_bool, nargs='?', const=True, default=OCR_USE_STREAMING_RESPONSE)
+parser.add_argument('-v', '--vision', help='Use Azure AI vision or not', type=str_to_bool, nargs='?', const=True, default=OCR_USE_AZURE_VISION)
 args = parser.parse_args()
 print(vars(args))
 
 # Get img_src_url from terminal parameter, if provided
-img_src_url = args.url if args.url else IMG_SRC
+img_src_url = args.url if args.url else OCR_DEFAULT_IMG_SRC
 
-user_message = USER_MESSAGE
+user_message = OCR_USER_MESSAGE
 
 if args.prompt:
     with open(args.prompt, 'r') as f:
@@ -43,17 +43,17 @@ if args.prompt:
 # print()
 
 # Configuration
-use_azure_vision = args.vision if args.vision else USE_AZURE_VISION
+use_azure_vision = args.vision if args.vision else OCR_USE_AZURE_VISION
 # use_azure_vision: bool = False
 # api_base = os.environ.get("AZURE_OPENAI_BASE_URL")
 # api_key = os.environ.get("OPENAI_API_KEY")
 deployment_name = os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME")
-api_version_default = API_VERSION_DEFAULT  
-api_version_ai_vision = API_VERSION_AI_VISION
+api_version_default = OCR_API_VERSION_DEFAULT  
+api_version_ai_vision = OCR_API_VERSION_AI_VISION
 azure_vision_endpoint = os.environ.get("AZURE_AI_VISION_ENDPOINT")
 azure_vision_key = os.environ.get("AZURE_AI_VISION_API_KEY")
 
-streaming_response = args.stream if args.stream else USE_STREAMING_RESPONSE
+streaming_response = args.stream if args.stream else OCR_USE_STREAMING_RESPONSE
 
 # Create an instance of AnyOCREngineResponseHandler
 resp_handler = AnyOCREngineResponseHandler(name="Default Handler")
