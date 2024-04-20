@@ -23,10 +23,10 @@ console = Console()
 app = FastAPI()
 
 class OCRRequest(BaseModel):
-    img_url: str = None
+    img_url: str = ""
     img_file: UploadFile = None
-    prompt: str = None
-    prompt_file: str = None
+    prompt: str = ""
+    prompt_file: str = ""
     temperature: float = 0.1 #0.2
     use_ai_vision: bool = True
     img_detail_level: AnyOCREngineImageDetailLevel = AnyOCREngineImageDetailLevel.DetailAuto

@@ -89,6 +89,8 @@ class AnyOCREngine:
 
     openai_base_url: str
 
+    last_all_content: str = ""
+
     def __init__(
         self,
         *,
@@ -215,14 +217,14 @@ class AnyOCREngine:
         )
 
         # Prepare a variable to store the all content
-        all_content: str = ""
+        self.last_all_content = ""
 
         # Process the response
         if not streaming_response:
             # print(response.model_dump_json())
-            all_content = response.choices[0].message.content
-            if self.response_handler is not None and all_content != "":
-                self.response_handler.handle_all_content_available(all_content)
+            self.last_all_content = response.choices[0].message.content
+            if self.response_handler is not None and self.last_all_content != "":
+                self.response_handler.handle_all_content_available(self.last_all_content)
 
         else:
             # If streaming response is enabled
@@ -241,9 +243,9 @@ class AnyOCREngine:
                                     parsed_content = json.loads(
                                         response_chunk.choices[0].messages[0]["delta"]["content"]
                                     )
-                                    all_content = parsed_content["grounding"]["lines"][0]["text"]
+                                    self.last_all_content = parsed_content["grounding"]["lines"][0]["text"]
                                     self.response_handler.handle_all_content_available(
-                                        all_content
+                                        self.last_all_content
                                     )
 
                             except json.JSONDecodeError:
@@ -256,6 +258,8 @@ class AnyOCREngine:
                         else:
                             # Handle chunked response
                             for item in response_chunk.choices[0].messages[0]["delta"]["content"]:
+                                self.last_all_content += item
+                                
                                 if self.response_handler is not None:
                                     self.response_handler.handle_chunked_content_available(
                                         item
@@ -264,7 +268,7 @@ class AnyOCREngine:
                     if response_chunk.choices[0].delta.content is not None:
                         # Handle chunked response
                         chunk_content = response_chunk.choices[0].delta.content
-                        all_content += chunk_content
+                        self.last_all_content += chunk_content
 
                         if self.response_handler is not None:
                             self.response_handler.handle_chunked_content_available(
@@ -273,8 +277,8 @@ class AnyOCREngine:
 
             # Handle the all content response only if azure_vision_active is False
             if not self.azure_vision_active:
-                if self.response_handler is not None and all_content != "":
-                    self.response_handler.handle_all_content_available(all_content)
+                if self.response_handler is not None and self.last_all_content != "":
+                    self.response_handler.handle_all_content_available(self.last_all_content)
 
         return response
 
