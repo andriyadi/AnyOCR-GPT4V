@@ -325,6 +325,11 @@ class AnyOCREngine:
             # Omit, just display the template
 
     def load_image(img_url: str) -> str:
+        # First check if it's already in base64 format
+        if img_url.startswith('data:image'):
+            return img_url
+
+        # Otherwise, read image file and encode to base64
         try:
             result = urllib.parse.urlparse(img_url)
             if all([result.scheme, result.netloc]):
