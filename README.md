@@ -5,7 +5,7 @@ Mentioned wrapper library is `AnyOCREngine.py`. And you can see how to use it in
 
 ## AnyOCR Console App
 
-AnyOCR Console App is a provided Python application that shows the possibility to use the `AnyOCREngine.py` wrapper library in order to recognize text from any image using OpenAI's GPT-4 with Vision model (hosted on Azure OpenAI Service) and Azure AI Vision. It provides a convenient way to extract text from images and perform various OCR-related tasks.
+AnyOCR Console App (`anyocr_app.py`) is a provided Python application that shows the possibility to use the `AnyOCREngine.py` wrapper library in order to recognize text from any image using OpenAI's GPT-4 with Vision model (hosted on Azure OpenAI Service) and Azure AI Vision. It provides a convenient way to extract text from images and perform various OCR-related tasks.
 
 Features:
 
@@ -69,14 +69,18 @@ Available options:
 
 ### Example Usage
 
-Recognize ID card and output in table format:
-`python anyocr_app.py -s False -v True -p prompts/prompt_sample.md -u https://example.com/image.jpg`
+1. Recognize ID card and output in table format:
+```
+python anyocr_app.py -s False -v True -p prompts/prompt_sample.md -u https://example.com/image.jpg
+```
 
 Output sample:
 ![ID recog in table format](https://raw.githubusercontent.com/andriyadi/AnyOCR-GPT4V/main/resources/capture_console_table_format.png)
 
-Recognize ID card and output in JSON format:
-`python anyocr_app.py -s False -v True -p prompts/prompt_json_ktp.md -u https://example.com/image.jpg`
+2. Recognize ID card and output in JSON format:
+```
+python anyocr_app.py -s False -v True -p prompts/prompt_json_ktp.md -u https://example.com/image.jpg
+```
 
 Output sample:
 ![ID recog in table format](https://raw.githubusercontent.com/andriyadi/AnyOCR-GPT4V/main/resources/capture_console_json_format.png)
