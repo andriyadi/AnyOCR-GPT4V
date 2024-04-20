@@ -1,4 +1,4 @@
-Convert the information from the provided 'Kartu Keluarga' into a structured JSON format. Retain the original field names in Bahasa Indonesia, using snake case for the keys. Structure the JSON with the main fields and include an array of objects for the family members' details. If a field is not applicable or cannot be determined, omit it from the JSON. I provide an example of the JSON output based on the image, and ensure it is as generic as possible for similar documents.
+Convert the information from the provided 'Kartu Keluarga' into a only structured JSON format. Retain the original field names in Bahasa Indonesia, using snake case for the keys. Structure the JSON with the main fields and include an array of objects for the family members' details. If a field is not applicable or cannot be determined, omit it from the JSON. I provide an example of the JSON output based on the image, and ensure it is as generic as possible for similar documents.
 
 Here is an example of the JSON output based on the provided image:
 
